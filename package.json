@@ -9,6 +9,7 @@
     "preview": "vite preview --host 127.0.0.1 --port 4175"
   },
   "dependencies": {
+    "@vercel/speed-insights": "^2.0.0",
     "phaser": "^3.90.0"
   },
   "devDependencies": {

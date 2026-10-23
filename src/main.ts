@@ -3,6 +3,7 @@ import './style.css';
 import { OfficeScene } from './game/OfficeScene';
 import { GameUI } from './ui/GameUI';
 import { ProgressStore } from './state/ProgressStore';
+import { injectSpeedInsights } from '@vercel/speed-insights';
 
 const store = new ProgressStore();
 const ui = new GameUI();
@@ -33,3 +34,6 @@ const game = new Phaser.Game({
 });
 
 (window as unknown as { __game: Phaser.Game }).__game = game;
+
+// Inject Vercel Speed Insights
+injectSpeedInsights();
