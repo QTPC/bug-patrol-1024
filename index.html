@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>BUG PATROL · 1024 夜班巡逻</title>
+  <meta name="description" content="1024 特别作品：在夜班办公室里潜行、挥网、收容 6 只野生 Bug。">
+  <meta name="theme-color" content="#040806">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3.7' fill='%231A1B1D'/%3E%3Crect x='2' y='4' width='12' height='1' fill='%2332F08C'/%3E%3Crect x='2' y='5' width='1' height='7' fill='%2332F08C'/%3E%3Crect x='13' y='5' width='1' height='7' fill='%2332F08C'/%3E%3Crect x='4' y='12' width='10' height='1' fill='%2332F08C'/%3E%3Crect x='3' y='5' width='10' height='7' fill='%23101215'/%3E%3Crect x='6' y='6' width='1' height='1' fill='%2332F08C'/%3E%3Crect x='5' y='7' width='3' height='1' fill='%2332F08C'/%3E%3Crect x='6' y='8' width='1' height='1' fill='%2332F08C'/%3E%3Crect x='11' y='6' width='1' height='1' fill='%2332F08C'/%3E%3Crect x='10' y='7' width='3' height='1' fill='%2332F08C'/%3E%3Crect x='11' y='8' width='1' height='1' fill='%2332F08C'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="page-head">
+      <div class="ph-brand">
+        <span class="ph-mark" aria-hidden="true">
+          <svg viewBox="0 0 12 12" shape-rendering="crispEdges"><rect width="12" height="12" fill="#1A1B1D"/><rect x="2" y="3" width="8" height="1" fill="#32F08C"/><rect x="2" y="4" width="1" height="5" fill="#32F08C"/><rect x="9" y="4" width="1" height="5" fill="#32F08C"/><rect x="4" y="9" width="6" height="1" fill="#32F08C"/><rect x="3" y="4" width="6" height="5" fill="#101215"/><rect x="4" y="5" width="1" height="1" fill="#32F08C"/><rect x="3" y="6" width="3" height="1" fill="#32F08C"/><rect x="4" y="7" width="1" height="1" fill="#32F08C"/><rect x="8" y="5" width="1" height="1" fill="#32F08C"/><rect x="7" y="6" width="3" height="1" fill="#32F08C"/><rect x="8" y="7" width="1" height="1" fill="#32F08C"/></svg>
+        </span>
+        <span>BUG PATROL <b>1024</b></span>
+      </div>
+      <div class="ph-note">NIGHT SHIFT · 收容 6 只 Bug</div>
+    </header>
+
+    <main class="game-frame" id="gameFrame">
+      <div id="game-root"></div>
+      <div class="frame-effect" aria-hidden="true"></div>
+
+      <div class="hud" id="hud">
+        <div class="hud-top">
+          <div class="brand-block">
+            <div class="brand-row"><span class="brand-dot"></span><b>BUG PATROL</b><span class="brand-year">1024</span></div>
+            <div class="zone-row"><span id="zoneName">工位区</span><span id="zoneEn">DESK ZONE</span><span class="zone-led"></span></div>
+          </div>
+          <div class="hud-cluster">
+            <div class="stat-chip"><span>收容</span><b id="hudCaught">0/6</b></div>
+            <div class="stat-chip"><span>驯化</span><b id="hudTamed">0/6</b></div>
+            <button class="hud-btn" id="btnSound" type="button" aria-pressed="true">SND ON</button>
+            <button class="hud-btn journal-btn" id="btnJournal" type="button">图鉴 <kbd>Tab</kbd></button>
+          </div>
+        </div>
+
+        <div class="hud-mid">
+          <div class="shift-chip"><span>SHIFT</span><b id="shiftClock">22:00</b><em id="shiftPhase">入夜</em></div>
+          <div class="minimap" id="minimap">
+            <div class="mm-head"><span>NIGHT MAP</span><span id="mmZone">DESK</span></div>
+            <svg id="mmSvg" viewBox="0 0 48 30" aria-label="办公室小地图">
+              <rect x="0" y="0" width="48" height="30" class="mm-bg"/>
+              <rect x="2" y="2" width="19" height="16" class="mm-room mm-desk"/>
+              <rect x="22" y="2" width="14" height="16" class="mm-room mm-server"/>
+              <rect x="37" y="2" width="9" height="16" class="mm-room mm-pantry"/>
+              <rect x="2" y="19" width="44" height="7" class="mm-corridor"/>
+              <text x="4" y="6" class="mm-label">工位</text>
+              <text x="24" y="6" class="mm-label">机房</text>
+              <text x="38.5" y="6" class="mm-label">茶水</text>
+              <g id="mmBugs"></g>
+              <circle id="mmPlayer" cx="4.5" cy="15" r="1.2" class="mm-player"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="hud-bottom-left">
+          <div class="controls-hint" id="controlsHint"><b>WASD</b> 移动　<b>Shift</b> 潜行　<b>Space</b> 挥网　<b>E</b> 互动　<b>Tab</b> 图鉴</div>
+          <div class="perk-bar" id="perkBar"></div>
+        </div>
+
+        <div class="hud-bottom-right">
+          <div class="goal-chip" id="goalChip"><span>GOAL</span><b>收容 0/6 · 驯化 0/6</b></div>
+        </div>
+
+        <div class="split-timer" id="splitTimer" aria-hidden="true"><span>RACE CONDITION</span><b>5.0s</b></div>
+        <div class="interaction-prompt" id="interactionPrompt"></div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+        <div class="capture-bar" id="captureBar" aria-hidden="true">
+          <div class="capture-head"><span id="captureName">空指针</span><em>在绿色区域按下空格 / 点击</em></div>
+          <div class="capture-track" id="captureTrack">
+            <div class="capture-amber" id="captureAmber"></div>
+            <div class="capture-green" id="captureGreen"></div>
+            <div class="capture-marker" id="captureMarker"></div>
+          </div>
+          <div class="capture-legend"><span class="cl-green">PERFECT</span><span class="cl-amber">GOOD</span><span class="cl-dim">MISS</span></div>
+        </div>
+      </div>
+
+      <div class="touch-controls" id="touchControls">
+        <div class="joystick" id="joystick"><div class="joystick-ring"></div><div class="joystick-knob" id="joystickKnob"></div><span class="joystick-label">MOVE</span></div>
+        <div class="touch-actions">
+          <button class="touch-btn" id="btnSneak" type="button">潜行<small>HOLD</small></button>
+          <button class="touch-btn net" id="btnNet" type="button">挥网<small>NET</small></button>
+          <button class="touch-btn" id="btnInteract" type="button">互动<small>E</small></button>
+        </div>
+      </div>
+
+      <div class="boot" id="boot">
+        <div class="boot-mark" aria-hidden="true">
+          <svg viewBox="0 0 12 12" shape-rendering="crispEdges"><rect width="12" height="12" fill="#1A1B1D"/><rect x="2" y="3" width="8" height="1" fill="#32F08C"/><rect x="2" y="4" width="1" height="5" fill="#32F08C"/><rect x="9" y="4" width="1" height="5" fill="#32F08C"/><rect x="4" y="9" width="6" height="1" fill="#32F08C"/><rect x="3" y="4" width="6" height="5" fill="#101215"/><rect x="4" y="5" width="1" height="1" fill="#32F08C"/><rect x="3" y="6" width="3" height="1" fill="#32F08C"/><rect x="4" y="7" width="1" height="1" fill="#32F08C"/><rect x="8" y="5" width="1" height="1" fill="#32F08C"/><rect x="7" y="6" width="3" height="1" fill="#32F08C"/><rect x="8" y="7" width="1" height="1" fill="#32F08C"/></svg>
+        </div>
+        <div class="boot-title">BUG PATROL <b>1024</b></div>
+        <div class="boot-line"><span class="boot-caret"></span> 正在生成夜班地图...</div>
+      </div>
+
+      <div class="rotate-hint">把手机横过来，夜班地图比较宽</div>
+    </main>
+
+    <footer class="page-foot">
+      <span>BUG PATROL · <b>1024</b> · MADE WITH TRAE</span>
+      <span>WASD 移动 · Shift 潜行 · Space 挥网 · Tab 图鉴 · 输入 1024 有惊喜</span>
+    </footer>
+  </div>
+
+  <div class="overlay journal-overlay" id="journal" aria-hidden="true">
+    <div class="overlay-backdrop" data-close="journal"></div>
+    <div class="journal-panel">
+      <header class="overlay-head">
+        <div><span class="eyebrow">ARCHIVE / 06 SPECIMENS</span><h2>Bug 图鉴</h2></div>
+        <div class="overlay-actions"><span id="journalCount">0 / 6 已收容</span><button class="close-btn" id="btnJournalClose" type="button" aria-label="关闭图鉴">×</button></div>
+      </header>
+      <div class="journal-grid" id="journalGrid"></div>
+      <div class="journal-foot"><span>点击已收容的档案开始安抚 · 完美捕捉 2 次、普通捕捉 3 次驯化</span><button class="link-btn" id="btnReset" type="button">重置档案</button></div>
+    </div>
+  </div>
+
+  <div class="overlay detail-overlay" id="detail" aria-hidden="true">
+    <div class="overlay-backdrop" data-close="detail"></div>
+    <div class="detail-panel" id="detailPanel"></div>
+  </div>
+
+  <div class="overlay ending-overlay" id="ending" aria-hidden="true">
+    <div class="overlay-backdrop"></div>
+    <div class="ending-panel">
+      <div class="ending-time">06:00</div>
+      <div class="ending-sub">SHIFT COMPLETE / 1024</div>
+      <h2>夜班结束</h2>
+      <p>6 只 Bug 都找到了家。天亮之前，把日志收好，把咖啡杯洗掉。</p>
+      <div class="ending-stats" id="endingStats"></div>
+      <div class="ending-actions">
+        <button class="primary-btn" id="btnContinue" type="button">继续逛逛</button>
+        <button class="line-btn" id="btnNewShift" type="button">重新开一班</button>
+      </div>
+      <div class="ending-note">MADE WITH TRAE · PHASER 3</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
